@@ -5,6 +5,7 @@ from citrination_client import CitrinationClient
 from dfttopif import directory_to_pif
 from pypif.obj.common.license import License
 from sparks_pif_converters.DSC.dsc_to_pif import netzsch_3500_to_pif
+from pypif.obj.common.person import Person
 
 
 def main():
@@ -21,6 +22,8 @@ def main():
                         help='Tags to add to PIFs')
     parser.add_argument('-l', '--license', default=None,
                         help='License to attach to PIFs')
+    parser.add_argument('-c', '--contact', default=None,
+                        help='Contact information')
 
     args = parser.parse_args()
 
@@ -38,6 +41,15 @@ def main():
         p.tags = args.tags
     if args.license is not None:
         p.licenses = [License(name=args.license)]
+    if args.contact is not None:
+        contact = Person()
+        toks = args.contact.split()
+        email = next(x for x in toks if "@" in x)
+        if email is not None:
+            contact.email = email.lstrip("<").rstrip(">")
+            toks.remove(email)
+        contact.name = " ".join(toks)
+        p.contacts = [contact]
 
     if path.isfile(args.path):
         pif_name = path.join(path.dirname(args.path), "pif.json")
@@ -48,6 +60,6 @@ def main():
         pif.dump(p, f, indent=2)
 
     if path.isfile(args.path):
-        client.upload_file(args.path, args.dataset)
-    else:
         client.upload_file(pif_name, args.dataset)
+    else:
+        client.upload_file(args.path, args.dataset)
