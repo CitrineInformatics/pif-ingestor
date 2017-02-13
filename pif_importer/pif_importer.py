@@ -4,6 +4,7 @@ from pypif import pif
 from citrination_client import CitrinationClient
 from dfttopif import directory_to_pif
 from pypif.obj.common.license import License
+from sparks_pif_converters.DSC.dsc_to_pif import netzsch_3500_to_pif
 from pypif.obj.common.person import Person
 
 
@@ -28,6 +29,10 @@ def main():
 
     if args.format == "VASP":
         p = directory_to_pif(args.path, quality_report=True)
+
+    elif args.format == "DSC":
+        p = netzsch_3500_to_pif(args.path)
+
     else:
         print("Unknown format")
         return
