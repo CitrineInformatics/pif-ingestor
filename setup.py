@@ -15,6 +15,7 @@ setup(name='pif_importer',
       install_requires=[
           "pypif",
           "dfttopif",
-          "citrination_client"
+          "citrination_client",
+          "sparks_pif_converters"
     ]
 )

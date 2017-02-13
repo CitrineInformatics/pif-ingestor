@@ -28,7 +28,6 @@ def main():
         p = directory_to_pif(args.path, quality_report=True)
 
     elif args.format == "DSC":
-        print("Parsing DSC: {}".format(args.path))
         p = netzsch_3500_to_pif(args.path)
 
     else:
