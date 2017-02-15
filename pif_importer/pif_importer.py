@@ -61,7 +61,6 @@ def main():
         pif_name = path.join(args.path, "pif.json")
 
     with open(pif_name, "w") as f:
-        print("OUTPUT: {}").format(pif_name)
         pif.dump(p, f, indent=2)
 
     if path.isfile(args.path):
