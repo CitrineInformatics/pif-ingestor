@@ -25,19 +25,29 @@ def main():
                         help='License to attach to PIFs')
     parser.add_argument('-c', '--contact', default=None,
                         help='Contact information')
+    parser.add_argument('--log', default="WARN", dest="log_level",
+                        help='Contact information')
 
     args = parser.parse_args()
 
+    logger = logging.getLogger(__name__)
+    ch = logging.StreamHandler()
+    log_number = getattr(logging, args.log_level.upper())
+    logger.setLevel(log_number)
+    ch.setLevel(log_number)
+    logger.addHandler(ch)
+
+
     if args.format == "VASP":
-        logging.info("Parsing as VASP files")
+        logger.info("Parsing as VASP files")
         p = directory_to_pif(args.path, quality_report=True)
 
     elif args.format == "DSC":
-        logging.info("Parsing as DSC files")
+        logger.info("Parsing as DSC files")
         p = netzsch_3500_to_pif(args.path)
 
     else:
-        logging.error("Unknown format")
+        logger.error("Unknown format")
         return
 
     if args.tags is not None:
@@ -61,11 +71,11 @@ def main():
 
     with open(pif_name, "w") as f:
         pif.dump(p, f, indent=2)
-    logging.info("Created pif at {}".format(pif_name))
+    logger.info("Created pif at {}".format(pif_name))
 
     if path.isfile(args.path):
         client.upload_file(pif_name, args.dataset)
-        logging.info("Uploaded file {}".format(pif_name))
+        logger.info("Uploaded file {}".format(pif_name))
     else:
         client.upload_file(args.path, args.dataset)
-        logging.info("Uploaded directory {}".format(args.path))
+        logger.info("Uploaded directory {}".format(args.path))
