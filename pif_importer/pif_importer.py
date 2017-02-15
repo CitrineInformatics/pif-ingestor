@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import logging
 from os import environ, path
 from pypif import pif
 from citrination_client import CitrinationClient
@@ -28,13 +29,15 @@ def main():
     args = parser.parse_args()
 
     if args.format == "VASP":
+        logging.info("Parsing as VASP files")
         p = directory_to_pif(args.path, quality_report=True)
 
     elif args.format == "DSC":
+        logging.info("Parsing as DSC files")
         p = netzsch_3500_to_pif(args.path)
 
     else:
-        print("Unknown format")
+        logging.error("Unknown format")
         return
 
     if args.tags is not None:
@@ -58,8 +61,11 @@ def main():
 
     with open(pif_name, "w") as f:
         pif.dump(p, f, indent=2)
+    logging.info("Created pif at {}".format(pif_name))
 
     if path.isfile(args.path):
         client.upload_file(pif_name, args.dataset)
+        logging.info("Uploaded file {}".format(pif_name))
     else:
         client.upload_file(args.path, args.dataset)
+        logging.info("Uploaded directory {}".format(args.path))
