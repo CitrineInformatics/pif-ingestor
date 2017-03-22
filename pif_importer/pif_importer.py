@@ -4,6 +4,9 @@ from os import environ, path
 from pypif import pif
 from citrination_client import CitrinationClient
 from dfttopif import directory_to_pif
+
+import stevedore
+
 from pypif.obj.common.license import License
 from sparks_pif_converters.DSC import dsc_to_pif
 from sparks_pif_converters.LFA import lfa_to_pif
@@ -11,7 +14,13 @@ from pypif.obj.common.person import Person
 
 
 def main():
-    client = CitrinationClient(environ['CITRINATION_API_KEY'], 'https://stage.citrination.com')
+
+    if 'CITRINATION_SITE' not in environ:
+        site = "https://citrination.com"
+    else:
+        site = environ['CITRINATION_SITE']
+    client = CitrinationClient(environ['CITRINATION_API_KEY'], site)
+
     parser = ArgumentParser(description="Import data files to Citrination")
 
     parser.add_argument('dataset', type=int,
@@ -38,8 +47,16 @@ def main():
     ch.setLevel(log_number)
     logger.addHandler(ch)
 
+    mgr = stevedore.extension.ExtensionManager(
+        namespace='citrine.dice.converter',
+        invoke_on_load=False
+    )
 
-    if args.format == "VASP":
+    if args.format in mgr:
+        extension = mgr[args.format]
+        p = extension.plugin.convert([args.path])
+
+    elif args.format == "VASP":
         logger.info("Parsing as VASP files")
         p = directory_to_pif(args.path, quality_report=True)
 
