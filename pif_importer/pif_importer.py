@@ -3,7 +3,7 @@ import logging
 from os import environ, path
 from pypif import pif
 from citrination_client import CitrinationClient
-from dfttopif import directory_to_pif
+import json
 
 import stevedore
 
@@ -37,6 +37,8 @@ def main():
                         help='Contact information')
     parser.add_argument('--log', default="WARN", dest="log_level",
                         help='Contact information')
+    parser.add_argument('--args', dest="converter_arguments", default={}, type=json.loads,
+                        help='Arguments to pass to converter (as json dictionary)')
 
     args = parser.parse_args()
 
@@ -54,11 +56,7 @@ def main():
 
     if args.format in mgr:
         extension = mgr[args.format]
-        p = extension.plugin.convert([args.path])
-
-    elif args.format == "VASP":
-        logger.info("Parsing as VASP files")
-        p = directory_to_pif(args.path, quality_report=True)
+        p = extension.plugin.convert([args.path], **args.converter_arguments)
 
     elif args.format == "DSC":
         logger.info("Parsing as DSC files")
