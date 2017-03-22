@@ -16,6 +16,7 @@ setup(name='pif_importer',
           "pypif",
           "dfttopif",
           "citrination_client",
-          "sparks_pif_converters"
+          "sparks_pif_converters",
+          "stevedore"
     ]
 )
