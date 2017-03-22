@@ -19,6 +19,7 @@ setup(name='pif_importer',
           "stevedore"
       ],
       extra_require={
+          "all" : ["dfttopif"],
           "dft" : ["dfttopif"],
       }
 )
