@@ -14,19 +14,20 @@ This will place an executable `pif-importer` in your bin directory (or the bin d
 ## Usage
 ```
 $ pif-importer -h
-usage: pif-importer [-h] [-f FORMAT] [--tags TAGS [TAGS ...]] [-l LICENSE]
-                    [-c CONTACT] [--log LOG_LEVEL]
+usage: pif-importer [-h] [-d DATASET] [-f FORMAT] [--tags TAGS [TAGS ...]]
+                    [-l LICENSE] [-c CONTACT] [--log LOG_LEVEL]
                     [--args CONVERTER_ARGUMENTS]
-                    dataset path
+                    path
 
 Import data files to Citrination
 
 positional arguments:
-  dataset               Dataset ID into which to upload PIFs
   path                  Location of the file or directory to import
 
 optional arguments:
   -h, --help            show this help message and exit
+  -d DATASET, --dataset DATASET
+                        Dataset ID into which to upload PIFs
   -f FORMAT, --format FORMAT
                         Format of data to import
   --tags TAGS [TAGS ...]
@@ -44,5 +45,5 @@ optional arguments:
 
 Convert a VASP file, generating a quality report, and upload it to datasetID 7:
 ```
-$ pif-importer 7 B.hR12 -f dft --args='{"quality_report" : true}'
+$ pif-importer B.hR12 -f dft -d --args='{"quality_report" : true}'
 ```
