@@ -23,7 +23,7 @@ def main():
 
     parser = ArgumentParser(description="Import data files to Citrination")
 
-    parser.add_argument('dataset', type=int,
+    parser.add_argument('-d', '--dataset', type=int, default=None, 
                         help='Dataset ID into which to upload PIFs')
     parser.add_argument('path',
                         help='Location of the file or directory to import')
@@ -93,9 +93,10 @@ def main():
         pif.dump(p, f, indent=2)
     logger.info("Created pif at {}".format(pif_name))
 
-    if path.isfile(args.path):
-        client.upload_file(pif_name, args.dataset)
-        logger.info("Uploaded file {}".format(pif_name))
-    else:
-        client.upload_file(args.path, args.dataset)
-        logger.info("Uploaded directory {}".format(args.path))
+    if args.dataset:
+        if path.isfile(args.path):
+            client.upload_file(pif_name, args.dataset)
+            logger.info("Uploaded file {}".format(pif_name))
+        else:
+            client.upload_file(args.path, args.dataset)
+            logger.info("Uploaded directory {}".format(args.path))
