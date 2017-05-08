@@ -1,15 +1,15 @@
 from setuptools import setup, find_packages
 
-setup(name='pif_importer',
+setup(name='pif_ingestor',
       version='0.0.1',
-      url='http://github.com/CitrineInformatics/pif-importer',
-      description='Script to import common data formats into Citrination',
+      url='http://github.com/CitrineInformatics/pif-ingestor',
+      description='Script to ingest common data formats into Citrination',
       author='Max Hutchinson',
       author_email='maxhutch@citrine.io',
       packages=find_packages(),
       entry_points={
           'console_scripts': [
-              'pif-importer = pif_importer:main'
+              'pif-ingestor = pif_ingestor:main'
           ]
       },
       install_requires=[
