@@ -15,7 +15,6 @@ setup(name='pif_ingestor',
       install_requires=[
           "pypif",
           "citrination_client",
-          "sparks_pif_converters",
           "stevedore"
       ],
       extra_require={
