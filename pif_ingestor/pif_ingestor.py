@@ -36,7 +36,7 @@ def main():
     parser.add_argument('-l', '--license', default=None,
                         help='License to attach to PIFs (string)')
     parser.add_argument('-c', '--contact', default=None,
-                        help='Contact information')
+                        help='Contact information (string)')
     parser.add_argument('--log', default="WARN", dest="log_level",
                         help='Logging level')
     parser.add_argument('--args', dest="converter_arguments", default={}, type=json.loads,

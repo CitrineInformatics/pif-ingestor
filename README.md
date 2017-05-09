@@ -38,7 +38,7 @@ optional arguments:
   -l LICENSE, --license LICENSE
                         License to attach to PIFs (string)
   -c CONTACT, --contact CONTACT
-                        Contact information
+                        Contact information (string)
   --log LOG_LEVEL       Logging level
   --args CONVERTER_ARGUMENTS
                         Arguments to pass to converter (as JSON dictionary)
