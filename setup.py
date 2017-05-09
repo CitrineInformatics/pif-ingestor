@@ -1,21 +1,24 @@
 from setuptools import setup, find_packages
 
-setup(name='pif_importer',
-      version='0.0.1',
-      url='http://github.com/CitrineInformatics/pif-importer',
-      description='Script to import common data formats into Citrination',
+setup(name='pif_ingestor',
+      version='0.1.0',
+      url='http://github.com/CitrineInformatics/pif-ingestor',
+      description='Script to ingest common data formats into Citrination',
       author='Max Hutchinson',
       author_email='maxhutch@citrine.io',
       packages=find_packages(),
       entry_points={
           'console_scripts': [
-              'pif-importer = pif_importer:main'
+              'pif-ingestor = pif_ingestor:main'
           ]
       },
       install_requires=[
           "pypif",
-          "dfttopif",
           "citrination_client",
-          "sparks_pif_converters"
-    ]
+          "stevedore"
+      ],
+      extra_require={
+          "all" : ["dfttopif"],
+          "dft" : ["dfttopif"],
+      }
 )

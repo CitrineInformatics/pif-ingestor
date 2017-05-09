@@ -1,1 +1,0 @@
-from .pif_importer import main
