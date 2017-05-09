@@ -11,6 +11,9 @@ $ pip install pif-ingestor[all]
 ```
 This will place an executable `pif-ingestor` in your bin directory (or the bin directory of your virtualenv).
 
+### Known public converters
+ * [dfttopif](https://github.com/CitrineInformatics/pif-dft) (ingests VASP and Quantum Espresso calculations)
+
 ## Usage
 ```
 $ pif-ingestor -h
