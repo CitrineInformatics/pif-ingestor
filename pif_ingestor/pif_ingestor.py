@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from sys import exit
 import logging
 from os import environ, path
 from pypif import pif
@@ -8,8 +9,6 @@ import json
 import stevedore
 
 from pypif.obj.common.license import License
-from sparks_pif_converters.DSC import dsc_to_pif
-from sparks_pif_converters.LFA import lfa_to_pif
 from pypif.obj.common.person import Person
 
 
@@ -21,24 +20,27 @@ def main():
         site = environ['CITRINATION_SITE']
     client = CitrinationClient(environ['CITRINATION_API_KEY'], site)
 
-    parser = ArgumentParser(description="Import data files to Citrination")
+    parser = ArgumentParser(description="Ingest data files to Citrination")
 
-    parser.add_argument('-d', '--dataset', type=int, default=None, 
-                        help='Dataset ID into which to upload PIFs')
+    # Required:
     parser.add_argument('path',
                         help='Location of the file or directory to import')
-    parser.add_argument('-f', '--format',
-                        help='Format of data to import')
+    parser.add_argument('format',
+                        help='Format of data to import, coresponding to the name of the converter extension')
+
+    # Optional
+    parser.add_argument('-d', '--dataset', type=int, default=None, 
+                        help='ID of the dataset into which to upload PIFs')
     parser.add_argument('--tags', nargs='+', default=None,
                         help='Tags to add to PIFs')
     parser.add_argument('-l', '--license', default=None,
-                        help='License to attach to PIFs')
+                        help='License to attach to PIFs (string)')
     parser.add_argument('-c', '--contact', default=None,
-                        help='Contact information')
+                        help='Contact information (string)')
     parser.add_argument('--log', default="WARN", dest="log_level",
-                        help='Contact information')
+                        help='Logging level')
     parser.add_argument('--args', dest="converter_arguments", default={}, type=json.loads,
-                        help='Arguments to pass to converter (as json dictionary)')
+                        help='Arguments to pass to converter (as JSON dictionary)')
 
     args = parser.parse_args()
 
@@ -57,18 +59,9 @@ def main():
     if args.format in mgr:
         extension = mgr[args.format]
         p = extension.plugin.convert([args.path], **args.converter_arguments)
-
-    elif args.format == "DSC":
-        logger.info("Parsing as DSC files")
-        p = dsc_to_pif.netzsch_3500_to_pif(args.path)
-
-    elif args.format == "LFA":
-        logger.info("Parsing as LFA files")
-        p = lfa_to_pif.lfa457_to_pif(args.path)
-
     else:
         logger.error("Unknown format")
-        return
+        exit(1)
 
     if args.tags is not None:
         p.tags = args.tags
