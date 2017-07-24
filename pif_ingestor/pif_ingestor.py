@@ -11,15 +11,15 @@ import stevedore
 from pypif.obj.common.license import License
 from pypif.obj.common.person import Person
 
+logger = logging.getLogger(__name__)
+
+
+def callback(manager, entrypoint, exception):
+    logger.error("Failed to load '{}' due to {}".format(entrypoint, exception)
+    return
+
 
 def main():
-
-    if 'CITRINATION_SITE' not in environ:
-        site = "https://citrination.com"
-    else:
-        site = environ['CITRINATION_SITE']
-    client = CitrinationClient(environ['CITRINATION_API_KEY'], site)
-
     parser = ArgumentParser(description="Ingest data files to Citrination")
 
     # Required:
@@ -44,23 +44,25 @@ def main():
 
     args = parser.parse_args()
 
-    logger = logging.getLogger(__name__)
+    # Configure logger
     ch = logging.StreamHandler()
     log_number = getattr(logging, args.log_level.upper())
     logger.setLevel(log_number)
     ch.setLevel(log_number)
     logger.addHandler(ch)
 
+    # Load extensions
     mgr = stevedore.extension.ExtensionManager(
         namespace='citrine.dice.converter',
-        invoke_on_load=False
+        invoke_on_load=False,
+        on_load_failure_callback=callback
     )
 
     if args.format in mgr:
         extension = mgr[args.format]
         p = extension.plugin.convert([args.path], **args.converter_arguments)
     else:
-        logger.error("Unknown format")
+        logger.error("{} is an unknown format\nAvailable formats: {}".format(args.format, mgr.names()))
         exit(1)
 
     if args.tags is not None:
@@ -87,6 +89,12 @@ def main():
     logger.info("Created pif at {}".format(pif_name))
 
     if args.dataset:
+        if 'CITRINATION_SITE' not in environ:
+            site = "https://citrination.com"
+        else:
+            site = environ['CITRINATION_SITE']
+        client = CitrinationClient(environ['CITRINATION_API_KEY'], site)
+
         if path.isfile(args.path):
             client.upload_file(pif_name, args.dataset)
             logger.info("Uploaded file {}".format(pif_name))
