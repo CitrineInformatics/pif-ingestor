@@ -2,6 +2,7 @@ from .ui import get_cli
 from .manager import run_extension
 from .enrichment import add_tags, add_license, add_contact
 from .uploader import upload
+from .packager import create_package
 import os.path
 from pypif import pif
 import logging
@@ -32,10 +33,25 @@ def main():
         pif.dump(pifs, f, indent=2)
     logging.info("Created pif at {}".format(pif_name))
 
+    if os.path.isfile(args.path):
+        all_files = [args.path, pif_name]
+    else:
+        all_files = [args.path]
+
     # Upload the pif and associated files
     if args.dataset:
-        if os.path.isfile(args.path):
-            to_upload = [args.path, pif_name]
+        upload(all_files, args.dataset)
+
+    if args.zip:
+        if args.zip[-4:] == ".zip":
+            zipname = args.zip
         else:
-            to_upload = [args.path]
-        upload(to_upload, args.dataset)
+            zipname = args.zip + ".zip"
+        create_package(all_files, zipname, format="zip")
+
+    if args.tar:
+        if args.tar[-4:] == ".tar":
+            tarname = args.tar
+        else:
+            tarname = args.tar + ".tar"
+        create_package(all_files, tarname, format="tar")
