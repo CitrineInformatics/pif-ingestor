@@ -1,1 +1,1 @@
-from .pif_ingestor import main
+from .core import *
