@@ -5,6 +5,7 @@ import tarfile
 
 
 def _add_to_package(arg, dirname, names):
+    """Helper function for os.walk"""
     for name in names:
         full_name = os.path.join(dirname, name)
         if full_name not in arg["members"]:
@@ -13,6 +14,7 @@ def _add_to_package(arg, dirname, names):
 
 
 def create_package(paths, filename, format="tar"):
+    """Package paths into a zip or tar file"""
     members = []
     if format == "tar":
         f = tarfile.TarFile.open(filename, "w")
