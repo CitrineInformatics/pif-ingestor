@@ -21,7 +21,7 @@ def _handle_pif(path, ingest_name, convert_args, enrich_args, ingest_manager):
 
     # Write the pif
     if os.path.isfile(path):
-        pif_name = os.path.join(os.path.dirname(path), "pif.json")
+        pif_name = "{}_{}".format(path, "pif.json")
         res = [path, pif_name]
     else:
         pif_name = os.path.join(path, "pif.json")
@@ -51,15 +51,24 @@ def main():
     ingest_manager = IngesterManager()
 
     all_files = []
+    exceptions = []
     if args.recursive:
         for root, dirs, files in walk(args.path):
             try:
                 new = _handle_pif(root, args.format, args.converter_arguments, enrichment_args, ingest_manager)
                 all_files.extend(new)
-            except:
-                pass
+            except Exception as err:
+                exceptions.append(err)
     else:
         all_files.extend(_handle_pif(args.path, args.format, args.converter_arguments, enrichment_args, ingest_manager))
+
+    if len(all_files) == 0 and len(exceptions) > 0:
+        raise ValueError("Unable to parse any subdirectories.  Exceptions:\n{}".format("\n".join([str(x) for x in exceptions])))
+
+    with open("ingestor.log", "w") as f:
+        f.write("Exceptions:\n")
+        for err in exceptions:
+            f.write("{}\n".format(str(err)))
 
     # Upload the pif and associated files
     if args.dataset:
