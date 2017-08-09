@@ -1,11 +1,37 @@
 from .ui import get_cli
-from .manager import run_extension
+from .manager import IngesterManager
 from .enrichment import add_tags, add_license, add_contact
 from .uploader import upload
 from .packager import create_package
 import os.path
+from os import walk
 from pypif import pif
 import logging
+
+
+def _handle_pif(path, ingest_name, convert_args, enrich_args, ingest_manager):
+    """Ingest and enrich pifs from a path, returning affected paths"""
+    # Run an ingest extension
+    pifs = ingest_manager.run_extension(ingest_name, path, convert_args)
+
+    # Perform enrichment
+    add_tags(pifs, enrich_args['tags'])
+    add_license(pifs, enrich_args['license'])
+    add_contact(pifs, enrich_args['contact'])
+
+    # Write the pif
+    if os.path.isfile(path):
+        pif_name = os.path.join(os.path.dirname(path), "pif.json")
+        res = [path, pif_name]
+    else:
+        pif_name = os.path.join(path, "pif.json")
+        res = [path]
+
+    with open(pif_name, "w") as f:
+        pif.dump(pifs, f, indent=2)
+    logging.info("Created pif at {}".format(pif_name))
+
+    return res
 
 
 def main():
@@ -15,28 +41,25 @@ def main():
     parser = get_cli()
     args = parser.parse_args()
 
-    # Run an ingest extension
-    pifs = run_extension(args.format, args.path, args.converter_arguments)
+    enrichment_args = {
+        'tags':    args.tags,
+        'license': args.license,
+        'contact': args.contact
+    }
 
-    # Perform enrichment
-    add_tags(pifs, args.tags)
-    add_license(pifs, args.license)
-    add_contact(pifs, args.contact)
+    # Load the ingest extensions
+    ingest_manager = IngesterManager()
 
-    # Write the pif
-    if os.path.isfile(args.path):
-        pif_name = os.path.join(os.path.dirname(args.path), "pif.json")
+    all_files = []
+    if args.recursive:
+        for root, dirs, files in walk(args.path):
+            try:
+                new = _handle_pif(root, args.format, args.converter_arguments, enrichment_args, ingest_manager)
+                all_files.extend(new)
+            except:
+                pass
     else:
-        pif_name = os.path.join(args.path, "pif.json")
-
-    with open(pif_name, "w") as f:
-        pif.dump(pifs, f, indent=2)
-    logging.info("Created pif at {}".format(pif_name))
-
-    if os.path.isfile(args.path):
-        all_files = [args.path, pif_name]
-    else:
-        all_files = [args.path]
+        all_files.extend(_handle_pif(args.path, args.format, args.converter_arguments, enrichment_args, ingest_manager))
 
     # Upload the pif and associated files
     if args.dataset:

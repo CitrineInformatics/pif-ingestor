@@ -13,6 +13,8 @@ def get_cli():
                         help='Format of data to import, coresponding to the name of the converter extension')
 
     # Optional
+    parser.add_argument("-r", "--recursive", action='store_true', default=False,
+                        help="Recursively walk through path, ingesting all valid subdirectories")
     parser.add_argument('-d', '--dataset', type=int, default=None,
                         help='ID of the dataset into which to upload PIFs')
     parser.add_argument('--tags', nargs='+', default=None,
