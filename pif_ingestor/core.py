@@ -51,24 +51,26 @@ def main():
     ingest_manager = IngesterManager()
 
     all_files = []
-    exceptions = []
+    exceptions = {}
     if args.recursive:
         for root, dirs, files in walk(args.path):
             try:
                 new = _handle_pif(root, args.format, args.converter_arguments, enrichment_args, ingest_manager)
                 all_files.extend(new)
             except Exception as err:
-                exceptions.append(err)
+                exceptions[root] = err
     else:
         all_files.extend(_handle_pif(args.path, args.format, args.converter_arguments, enrichment_args, ingest_manager))
 
     if len(all_files) == 0 and len(exceptions) > 0:
-        raise ValueError("Unable to parse any subdirectories.  Exceptions:\n{}".format("\n".join([str(x) for x in exceptions])))
+        raise ValueError("Unable to parse any subdirectories.  Exceptions:\n{}".format(
+            "\n".join(["{}: {}".format(k, str(v)) for k, v in exceptions]))
+        )
 
     with open("ingestor.log", "w") as f:
         f.write("Exceptions:\n")
-        for err in exceptions:
-            f.write("{}\n".format(str(err)))
+        for root, err in exceptions:
+            f.write("{}: {}\n".format(rot, str(err)))
 
     # Upload the pif and associated files
     if args.dataset:
