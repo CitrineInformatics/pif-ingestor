@@ -70,7 +70,7 @@ def main():
     with open("ingestor.log", "w") as f:
         f.write("Exceptions:\n")
         for root, err in exceptions:
-            f.write("{}: {}\n".format(rot, str(err)))
+            f.write("{}: {}\n".format(root, str(err)))
 
     # Upload the pif and associated files
     if args.dataset:
