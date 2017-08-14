@@ -1,17 +1,23 @@
 language: python
-
 python:
 - '2.7'
 - '3.4'
 - '3.5'
 - '3.6'
-
 install:
 - pip install pytest
 - pip install -r requirements.txt
 - pip install -r test_requirements.txt
 - pip install --no-deps -e .
-
-script: 
- - pif-ingestor -h
- - py.test -s
+script:
+- pif-ingestor -h
+- py.test -s
+deploy:
+  provider: pypi
+  user: CitrineInformatics
+  on:
+    distributions: sdist bdist_wheel
+    repo: CitrineInformatics/pif-ingestor
+    branch: master
+  password:
+    secure: s3N9PmZsy9r9y/Ya9gJufA6bnmGM18jAyOsoU3sD4ql9szDUd29x2+S82IMD6gOlirgsw+jyVOnl2mdCi1gqWafH00rJZnBy5Yeyk2AHMbZKDJcecBLtyTrqcYJkvdj7PvA1D67HtJec22mrGEEypP6uSK+UT/De6f1z1p5eW9UDBz9Rjv4NTAocoW/EkRqu3uV8j/a35YqIUA+pc69Kx2vrP83kdA6P7xPUQZJ3+SZXIaXMNWKpmbkjGFEl1l5Hb0Sre9JxBP8SqUStKIrnWjxSSNlrrqnsvNGEbZ8doeqhfADEPgYg0CGp+i6iptJYkiwka7+j3yHuo4O1jxpRQIoMqcJMJK0bFJS20xvuL+vZ6ABd6KsvSnmj0qcM6h7AJmWWsHTvv+QnoedRNrJYjkKPXN9ybPCprbXyupUx9SwnjecdUSrPaWBRf+JWX+wBuwcmHbxlY6/ThgTSsN6Gr+TK9M1qisMLz+qbrOq1R1Lo0d4GhqyYhIGeQsn4Q/HxLMlLEele5cygMQIBTiXqO63CtRUVLzxq/FwJOj/OADgISGswqSQ32yPzKsXFWzLDFcMpCEL5Z1o5eWf+stVr5w6Lp4va141bB3yrZbtvjxji7c/97EUSpWja7I9DyLqkeyx/evOuzP80kLggi8g0dpYAo3SrComOeSmfwLZb4wo=
