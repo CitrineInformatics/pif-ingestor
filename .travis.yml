@@ -8,7 +8,11 @@ python:
 - '3.6'
 
 install:
+- pip install py.test
 - pip install -r requirements.txt
+- pip install -r test_requirements.txt
 - pip install --no-deps -e .
 
-script: pif-ingestor -h
+script: 
+ - pif-ingestor -h
+ - py.test -s

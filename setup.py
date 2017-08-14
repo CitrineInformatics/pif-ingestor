@@ -9,7 +9,7 @@ setup(name='pif_ingestor',
       packages=find_packages(),
       entry_points={
           'console_scripts': [
-              'pif-ingestor = pif_ingestor:main'
+              'pif-ingestor = pif_ingestor:drive_cli'
           ]
       },
       install_requires=[

@@ -34,12 +34,8 @@ def _handle_pif(path, ingest_name, convert_args, enrich_args, ingest_manager):
     return res
 
 
-def main():
+def main(args):
     """Main driver for pif-ingestor"""
-
-    # Get direction from the user
-    parser = get_cli()
-    args = parser.parse_args()
 
     enrichment_args = {
         'tags':    args.tags,
@@ -69,7 +65,7 @@ def main():
 
     with open("ingestor.log", "w") as f:
         f.write("Exceptions:\n")
-        for root, err in exceptions:
+        for root, err in exceptions.items():
             f.write("{}: {}\n".format(root, str(err)))
 
     # Upload the pif and associated files
