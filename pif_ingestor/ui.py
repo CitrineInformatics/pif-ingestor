@@ -33,3 +33,11 @@ def get_cli():
                         help='Arguments to pass to converter (as JSON dictionary)')
 
     return parser
+
+def drive_cli():
+    from .core import main
+    # Get direction from the user
+    parser = get_cli()
+    args = parser.parse_args()
+    main(args)
+
