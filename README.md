@@ -18,12 +18,11 @@ This will place an executable `pif-ingestor` in your bin directory (or the bin d
 ```
 $ pif-ingestor -h
 usage: pif-ingestor [-h] [-d DATASET] [--tags TAGS [TAGS ...]] [-l LICENSE]
-                    [-c CONTACT] [--log LOG_LEVEL]
+                    [-c CONTACT] [-z ZIP] [-t TAR]
                     [--args CONVERTER_ARGUMENTS]
                     path format
 
 Ingest data files to Citrination
-
 positional arguments:
   path                  Location of the file or directory to import
   format                Format of data to import, coresponding to the name of
@@ -39,7 +38,8 @@ optional arguments:
                         License to attach to PIFs (string)
   -c CONTACT, --contact CONTACT
                         Contact information (string)
-  --log LOG_LEVEL       Logging level
+  -z ZIP, --zip ZIP     Zip to this file
+  -t TAR, --tar TAR     Tar to this file
   --args CONVERTER_ARGUMENTS
                         Arguments to pass to converter (as JSON dictionary)
 ```

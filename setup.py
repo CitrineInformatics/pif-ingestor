@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='pif_ingestor',
-      version='0.1.0',
+      version='0.2.0',
       url='http://github.com/CitrineInformatics/pif-ingestor',
       description='Script to ingest common data formats into Citrination',
       author='Max Hutchinson',
@@ -9,7 +9,7 @@ setup(name='pif_ingestor',
       packages=find_packages(),
       entry_points={
           'console_scripts': [
-              'pif-ingestor = pif_ingestor:main'
+              'pif-ingestor = pif_ingestor:drive_cli'
           ]
       },
       install_requires=[
