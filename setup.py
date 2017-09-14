@@ -20,5 +20,6 @@ setup(name='pif_ingestor',
       extra_require={
           "all" : ["dfttopif"],
           "dft" : ["dfttopif"],
+          "matmeta": ["matmeta"],
       }
 )
