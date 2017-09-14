@@ -7,6 +7,7 @@ import os.path
 from os import walk
 from pypif import pif
 import logging
+from .ext.matmeta import add_metadata
 
 
 def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_manager):
@@ -15,7 +16,7 @@ def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_m
     pifs = ingest_manager.run_extension(ingest_name, path, convert_args)
 
     if len(metadata) > 0:
-        # TODO: add meta-data to pifs 
+        pifs = [add_metadata(x, metadata) for x in pifs]
 
     # Perform enrichment
     add_tags(pifs, enrich_args['tags'])
