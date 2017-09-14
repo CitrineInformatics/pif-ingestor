@@ -6,6 +6,7 @@ from .packager import create_package
 import os.path
 from os import walk
 from pypif import pif
+import json
 import logging
 from .ext.matmeta import add_metadata
 
@@ -14,6 +15,8 @@ def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_m
     """Ingest and enrich pifs from a path, returning affected paths"""
     # Run an ingest extension
     pifs = ingest_manager.run_extension(ingest_name, path, convert_args)
+    if not isinstance(pifs, list):
+        pifs = [pifs]
 
     if len(metadata) > 0:
         pifs = [add_metadata(x, metadata) for x in pifs]

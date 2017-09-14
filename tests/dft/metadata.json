@@ -1,0 +1,21 @@
+{
+    "data_contacts": [
+        {
+            "given_name": "John",
+            "family_name": "Smith",
+            "email": "johnsmith@generic.org"
+        }
+    ],
+    "data_contributors": [
+        {
+            "given_name": "Jane",
+            "family_name": "Doe",
+            "email": "janedoe@generic.org"
+        }
+    ],
+    "description": "test description",
+    "source": {
+        "name": "test source"
+    },
+    "title": "test title"
+}

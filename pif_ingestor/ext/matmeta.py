@@ -11,7 +11,8 @@ def matmeta_to_pif(metadata):
         from matmeta.payload_metaclass import CITPayload
     except ImportError:
         raise ImportError("Install package `matmeta` in order to use meta-data input")
-    return pif.loads(CITPayload(**metadata).metapayload) 
+    payload = CITPayload(**metadata).metapayload
+    return pif.loads(pif.dumps(payload))
 
 
 def _deep_update(old, new):
