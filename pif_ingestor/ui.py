@@ -27,6 +27,8 @@ def get_cli():
                         help="Zip to this file")
     parser.add_argument("-t", "--tar", default=None,
                         help="Tar to this file")
+    parser.add_argument("--globus-collection", dest="globus_collection", default=None,
+                        help="Globus Publish collection to upload files")
     # parser.add_argument('--log', default="WARN", dest="log_level",
     #                    help='Logging level')
     parser.add_argument('--args', dest="converter_arguments", default={}, type=json.loads,

@@ -3,6 +3,7 @@ from .manager import IngesterManager
 from .enrichment import add_tags, add_license, add_contact
 from .uploader import upload
 from .packager import create_package
+from .globus import push_to_globus
 import os.path
 from os import walk
 from pypif import pif
@@ -45,6 +46,9 @@ def main(args):
 
     # Load the ingest extensions
     ingest_manager = IngesterManager()
+
+    if args.globus_collection:
+        push_to_globus(args.path, args.recursive, args.globus_collection)
 
     all_files = []
     exceptions = {}
