@@ -1,3 +1,5 @@
 pypif
 citrination_client
 stevedore
+globus_sdk
+mdf_forge
