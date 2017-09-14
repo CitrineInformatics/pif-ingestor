@@ -3,8 +3,9 @@ import os
 interval_time = 10
 default_collection = 35  # MDF Test collection
 
-def push_to_globus(paths, metadata={}, collection=default_collection, src_ep=None, verbose=False):
+def push_to_globus(paths, metadata={}, collection=default_collection, source_endpoint=None, transfer_timeout=None, verbose=False):
     """Upload files in path to globus collection"""
+    #TODO: Cleanup partial submission on error
     try:
         from globus_sdk import GlobusError, TransferData
         from mdf_forge import toolbox
@@ -19,7 +20,8 @@ def push_to_globus(paths, metadata={}, collection=default_collection, src_ep=Non
     clients = toolbox.login(config)
     transfer_client = clients["transfer"]
     publish_client = clients["publish"]
-    src_endpoint = src_ep or toolbox.get_local_ep(transfer_client)
+    if not source_endpoint:
+        source_endpoint = toolbox.get_local_ep(transfer_client)
 
     # Process metadata
     if not metadata.get("accept_license"):
@@ -36,13 +38,14 @@ def push_to_globus(paths, metadata={}, collection=default_collection, src_ep=Non
         print("Metadata uploaded")
 
     # Transfer the file(s)
-    tdata = TransferData(transfer_client, src_endpoint, dest_endpoint, notify_on_succeeded=False, notify_on_inactive=False, notify_on_failed=False)
-    for src_path in paths:
+    tdata = TransferData(transfer_client, source_endpoint, dest_endpoint, notify_on_succeeded=False, notify_on_inactive=False, notify_on_failed=False)
+    all_dests = []
+    for source_path in paths:
 
         #TODO: Optimize this loop
         # Add each dir from the source path to the dest path, creating if needed on the dest ep
         full_dest_path = dest_path
-        for dirc in os.path.dirname(src_path).strip("/").split("/"):
+        for dirc in os.path.dirname(source_path).strip("/").split("/"):
             full_dest_path = os.path.join(full_dest_path, dirc)
             try:
                 transfer_client.operation_mkdir(dest_endpoint, full_dest_path)
@@ -52,9 +55,10 @@ def push_to_globus(paths, metadata={}, collection=default_collection, src_ep=Non
                     pass
                 else:
                     raise
-        full_dest_path = os.path.join(full_dest_path, os.path.basename(src_path))
+        full_dest_path = os.path.join(full_dest_path, os.path.basename(source_path))
+        all_dests.append(full_dest_path)
 
-        tdata.add_item(os.path.abspath(src_path), full_dest_path, recursive=False)
+        tdata.add_item(os.path.abspath(source_path), full_dest_path, recursive=False)
     transfer_res = transfer_client.submit_transfer(tdata)
 
     # Wait for transfer to complete
@@ -68,9 +72,11 @@ def push_to_globus(paths, metadata={}, collection=default_collection, src_ep=Non
                 if event["is_error"]:
                     transfer_client.cancel_task(transfer_res["task_id"])
                     raise GlobusError("Error: " + event["description"])
-                if config_data["timeout"] and intervals >= timeout_intervals:
+                if transfer_timeout and intervals >= transfer_timeout:
                     transfer_client.cancel_task(transfer_res["task_id"])
                     raise GlobusError("Transfer timed out.")
+                if verbose:
+                    print("Transferring...")
         if verbose:
             print("Transfer complete")
 
@@ -81,8 +87,9 @@ def push_to_globus(paths, metadata={}, collection=default_collection, src_ep=Non
         print("Result:", result.data)
 
     return {
-        "local_path": src_path,
-        "globus_path": full_dest_path,
+        "globus_urls": [dest_endpoint + dest_path for dest_path in all_dests],
+        "webapp_urls": ["https://www.globus.org/app/transfer?origin_id={}&origin_path={}".format(dest_endpoint, dest_path) for dest_path in all_dests],
+        "http_urls": ["Not supported on this endpoint"],
         "globus_info": result.data
         }
 
