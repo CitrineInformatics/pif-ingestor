@@ -18,7 +18,8 @@ setup(name='pif_ingestor',
           "stevedore"
       ],
       extra_require={
-          "all" : ["dfttopif"],
+          "all" : ["dfttopif", "globus_sdk", "mdf_forge"],
+          "mdf" : ["globus_sdk", "mdf_forge"],
           "dft" : ["dfttopif"],
       }
 )

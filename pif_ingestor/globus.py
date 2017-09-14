@@ -1,12 +1,16 @@
 import os
-from globus_sdk import GlobusError, TransferData
-from mdf_forge import toolbox
 
 interval_time = 10
 default_collection = 35  # MDF Test collection
 
 def push_to_globus(paths, metadata={}, collection=default_collection, src_ep=None, verbose=False):
     """Upload files in path to globus collection"""
+    try:
+        from globus_sdk import GlobusError, TransferData
+        from mdf_forge import toolbox
+    except ImportError:
+        raise ImportError("Install 'globus_sdk' and 'mdf_forge' before uploading to globus")
+
     # Set up clients
     config = {
         "app_name": "PIF Ingestor",
