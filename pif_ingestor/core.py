@@ -5,7 +5,7 @@ from .uploader import upload
 from .packager import create_package
 from .globus import push_to_globus
 import os.path
-from os import walk
+from os import walk, listdir
 from pypif import pif
 import logging
 
@@ -35,6 +35,17 @@ def _handle_pif(path, ingest_name, convert_args, enrich_args, ingest_manager):
     return res
 
 
+def _enumerate_files(path, recursive):
+    if os.path.isfile(path):
+        return [path]
+    if os.path.isdir(path) and not recursive:
+        return [x for x in listdir(path) if os.path.isfile(x)]
+    res = []
+    for root, dirs, files in walk(args.path):
+        res.extend(files)
+    return res 
+
+
 def main(args):
     """Main driver for pif-ingestor"""
 
@@ -48,7 +59,7 @@ def main(args):
     ingest_manager = IngesterManager()
 
     if args.globus_collection:
-        push_to_globus(args.path, args.recursive, args.globus_collection)
+        push_to_globus(_enumerate_files(args.path, args.recursive), collection=args.globus_collection)
 
     all_files = []
     exceptions = {}
