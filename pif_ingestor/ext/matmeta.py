@@ -15,7 +15,7 @@ def matmeta_to_pif(metadata):
 
 
 def _deep_update(old, new):
-    for k, v in new:
+    for k, v in new.items():
         if k not in old:
             old[k] = new[k]
         elif isinstance(old[k], list) and isinstance(new[k], list):
