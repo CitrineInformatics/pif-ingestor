@@ -9,10 +9,13 @@ from pypif import pif
 import logging
 
 
-def _handle_pif(path, ingest_name, convert_args, enrich_args, ingest_manager):
+def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_manager):
     """Ingest and enrich pifs from a path, returning affected paths"""
     # Run an ingest extension
     pifs = ingest_manager.run_extension(ingest_name, path, convert_args)
+
+    if len(metadata) > 0:
+        # TODO: add meta-data to pifs 
 
     # Perform enrichment
     add_tags(pifs, enrich_args['tags'])
@@ -46,17 +49,22 @@ def main(args):
     # Load the ingest extensions
     ingest_manager = IngesterManager()
 
+    metadata = {}
+    if args.meta:
+        with open(args.meta, "r") as f:
+            metadata = json.load(f) 
+
     all_files = []
     exceptions = {}
     if args.recursive:
         for root, dirs, files in walk(args.path):
             try:
-                new = _handle_pif(root, args.format, args.converter_arguments, enrichment_args, ingest_manager)
+                new = _handle_pif(root, args.format, args.converter_arguments, enrichment_args, metadata, ingest_manager)
                 all_files.extend(new)
             except Exception as err:
                 exceptions[root] = err
     else:
-        all_files.extend(_handle_pif(args.path, args.format, args.converter_arguments, enrichment_args, ingest_manager))
+        all_files.extend(_handle_pif(args.path, args.format, args.converter_arguments, enrichment_args, metadata, ingest_manager))
 
     if len(all_files) == 0 and len(exceptions) > 0:
         raise ValueError("Unable to parse any subdirectories.  Exceptions:\n{}".format(
