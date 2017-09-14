@@ -9,7 +9,8 @@ def add_metadata(pif, metadata):
 def matmeta_to_pif(metadata):
     try:
         from matmeta.payload_metaclass import CITPayload
-    except ImportError:
+    except ImportError as e:
+        print(e)
         raise ImportError("Install package `matmeta` in order to use meta-data input")
     payload = CITPayload(**metadata).metapayload
     return pif.loads(pif.dumps(payload))

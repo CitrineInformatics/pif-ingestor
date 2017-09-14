@@ -72,7 +72,7 @@ def main(args):
 
     if len(all_files) == 0 and len(exceptions) > 0:
         raise ValueError("Unable to parse any subdirectories.  Exceptions:\n{}".format(
-            "\n".join(["{}: {}".format(k, str(v)) for k, v in exceptions]))
+            "\n".join(["{}: {}".format(k, str(v)) for k, v in exceptions.items()]))
         )
 
     with open("ingestor.log", "w") as f:
