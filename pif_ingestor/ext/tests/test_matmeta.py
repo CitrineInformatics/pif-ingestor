@@ -1,4 +1,4 @@
-from pif_ingestor.ext.matmeta import *
+from pif_ingestor.ext.matmeta_wrapper import *
 
 from pypif.obj.common import *
 from pypif.obj.system import System

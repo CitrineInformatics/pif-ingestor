@@ -8,7 +8,7 @@ from os import walk
 from pypif import pif
 import json
 import logging
-from .ext.matmeta import add_metadata
+from .ext.matmeta_wrapper import add_metadata
 
 
 def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_manager):
