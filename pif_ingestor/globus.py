@@ -2,6 +2,7 @@ import os
 
 interval_time = 10
 default_collection = 35  # MDF Test collection
+#default_collection = 21  # MDF Open Collection
 
 def push_to_globus(paths, metadata={}, collection=default_collection, source_endpoint=None, transfer_timeout=None, verbose=False):
     """Upload files in path to globus collection"""
@@ -84,12 +85,21 @@ def push_to_globus(paths, metadata={}, collection=default_collection, source_end
     fin_res = publish_client.complete_submission(submission_id)
     if verbose:
         print("Submission complete")
-        print("Result:", result.data)
+        print("Result:", fin_res.data)
 
-    return {
-        "globus_urls": [dest_endpoint + dest_path for dest_path in all_dests],
-        "webapp_urls": ["https://www.globus.org/app/transfer?origin_id={}&origin_path={}".format(dest_endpoint, dest_path) for dest_path in all_dests],
-        "http_urls": ["Not supported on this endpoint"],
-        "globus_info": result.data
+    globus_urls = [dest_endpoint + dest_path for dest_path in all_dests]
+    webapp_urls = ["https://www.globus.org/app/transfer?origin_id={}&origin_path={}".format(dest_endpoint, dest_path) for dest_path in all_dests]
+    http_urls = ["https://data.materialsdatafacility.org/mdf-test/unpublished/publication_{}/".format(fin_res["id"])]
+    path_map = {
+        "globus_info": fin_res.data
         }
+
+    for pos, orig in enumerate(paths):
+        path_map[orig] = {
+            "globus_url": globus_urls[pos],
+            "webapp_url": webapp_urls[pos],
+            "http_url": http_urls[pos]
+            }
+
+    return path_map
 
