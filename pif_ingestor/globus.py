@@ -8,7 +8,7 @@ def push_to_globus(paths, metadata={}, collection=default_collection, source_end
     """Upload files in path to globus collection"""
     #TODO: Cleanup partial submission on error
     try:
-        from globus_sdk import GlobusError, TransferData
+        from globus_sdk import GlobusError, GlobusAPIError, TransferData
         from mdf_forge import toolbox
     except ImportError:
         raise ImportError("Install 'globus_sdk' and 'mdf_forge' before uploading to globus")
@@ -52,7 +52,7 @@ def push_to_globus(paths, metadata={}, collection=default_collection, source_end
                 transfer_client.operation_mkdir(dest_endpoint, full_dest_path)
             except GlobusAPIError as e:
                 # If path already created, continue
-                if e.status_code == 502:
+                if e.http_status == 502:
                     pass
                 else:
                     raise
@@ -89,7 +89,7 @@ def push_to_globus(paths, metadata={}, collection=default_collection, source_end
 
     globus_urls = [dest_endpoint + dest_path for dest_path in all_dests]
     webapp_urls = ["https://www.globus.org/app/transfer?origin_id={}&origin_path={}".format(dest_endpoint, dest_path) for dest_path in all_dests]
-    http_urls = ["https://data.materialsdatafacility.org/mdf-test/unpublished/publication_{}/".format(fin_res["id"])]
+    http_urls = ["https://data.materialsdatafacility.org/{}".format(dest_path) for dest_path in all_dests]
     path_map = {
         "globus_info": fin_res.data
         }
