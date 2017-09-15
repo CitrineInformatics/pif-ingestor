@@ -48,8 +48,8 @@ def _enumerate_files(path, recursive):
     if os.path.isdir(path) and not recursive:
         return [x for x in listdir(path) if os.path.isfile(x)]
     res = []
-    for root, dirs, files in walk(args.path):
-        res.extend(files)
+    for root, dirs, files in walk(path):
+        res.extend(os.path.join(root, x) for x in files)
     return res 
 
 
@@ -66,7 +66,7 @@ def main(args):
     ingest_manager = IngesterManager()
 
     if args.globus_collection:
-        push_to_globus(_enumerate_files(args.path, args.recursive), collection=args.globus_collection)
+        globus_remap = push_to_globus(_enumerate_files(args.path, args.recursive), collection=args.globus_collection)
 
     metadata = {}
     if args.meta:
