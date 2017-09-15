@@ -3,3 +3,4 @@ citrination_client
 stevedore
 globus_sdk
 mdf_forge
+matmeta==0.1.1

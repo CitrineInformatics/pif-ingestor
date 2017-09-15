@@ -8,7 +8,7 @@ install:
 - pip install pytest
 - pip install -r requirements.txt
 - pip install -r test_requirements.txt
-- pip install --no-deps -e .
+- pip install --no-deps -e .[all]
 script:
 - pif-ingestor -h
 - py.test -s
