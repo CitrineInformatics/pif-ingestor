@@ -1,4 +1,4 @@
 pypif
 citrination_client
 stevedore
-matmeta==0.1.0
+matmeta==0.1.1
