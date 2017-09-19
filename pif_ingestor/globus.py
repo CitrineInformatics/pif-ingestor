@@ -1,4 +1,6 @@
 import os
+import json
+import pypif
 
 interval_time = 10
 default_collection = 35  # MDF Test collection
@@ -103,3 +105,19 @@ def push_to_globus(paths, metadata={}, collection=default_collection, source_end
 
     return path_map
 
+
+def _recurse_replace(obj, key, newKey, sub):
+    if isinstance(obj, list):
+        return [_recurse_replace(x, key, newKey, sub) for x in obj]
+    if isinstance(obj, dict):
+        for k, v in list(obj.items()):
+            if k == key and v in sub:
+                obj[newKey] = sub[v]
+            else:
+                obj[k] = _recurse_replace(v, key, newKey, sub)
+    return obj
+           
+
+def replace_paths(pif, links):
+    d = pif.as_dictionary()
+    return pypif.pif.loads(json.dumps(_recurse_replace(d, "relativePath", "url", links)))
