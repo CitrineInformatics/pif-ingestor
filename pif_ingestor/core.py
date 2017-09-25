@@ -3,13 +3,14 @@ from .manager import IngesterManager
 from .enrichment import add_tags, add_license, add_contact
 from .uploader import upload
 from .packager import create_package
-from .globus import push_to_globus, replace_paths
+from .globus import push_to_globus
 import os.path
 from os import walk, listdir
 from pypif import pif
 import json
 import logging
 from .ext.matmeta_wrapper import add_metadata
+from pypif_sdk.func import replace_by_key
 
 
 def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_manager, path_replace):
@@ -23,7 +24,7 @@ def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_m
         pifs = [add_metadata(x, metadata) for x in pifs]
 
     if len(path_replace) > 0:
-        pifs = [replace_paths(x, path_replace) for x in pifs]
+        pifs = [replace_by_key(x, "relative_path", path_replace, new_key="url", remove=False) for x in pifs]
 
     # Perform enrichment
     add_tags(pifs, enrich_args['tags'])

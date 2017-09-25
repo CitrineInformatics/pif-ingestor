@@ -1,4 +1,5 @@
 pypif
+pypif_sdk
 citrination_client
 stevedore
 matmeta==0.1.1
