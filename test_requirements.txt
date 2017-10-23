@@ -1,4 +1,4 @@
-dfttopif
+dfttopif==0.3.1
 matmeta
 globus_sdk
 mdf_forge
