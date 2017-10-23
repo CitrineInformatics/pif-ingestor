@@ -3,15 +3,17 @@ from .manager import IngesterManager
 from .enrichment import add_tags, add_license, add_contact
 from .uploader import upload
 from .packager import create_package
+from .globus import push_to_globus
 import os.path
-from os import walk
+from os import walk, listdir
 from pypif import pif
 import json
 import logging
 from .ext.matmeta_wrapper import add_metadata
+from pypif_sdk.func import replace_by_key
 
 
-def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_manager):
+def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_manager, path_replace):
     """Ingest and enrich pifs from a path, returning affected paths"""
     # Run an ingest extension
     pifs = ingest_manager.run_extension(ingest_name, path, convert_args)
@@ -20,6 +22,9 @@ def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_m
 
     if len(metadata) > 0:
         pifs = [add_metadata(x, metadata) for x in pifs]
+
+    if len(path_replace) > 0:
+        pifs = [replace_by_key(x, "relative_path", path_replace, new_key="url", remove=False) for x in pifs]
 
     # Perform enrichment
     add_tags(pifs, enrich_args['tags'])
@@ -41,6 +46,17 @@ def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_m
     return res
 
 
+def _enumerate_files(path, recursive):
+    if os.path.isfile(path):
+        return [path]
+    if os.path.isdir(path) and not recursive:
+        return [x for x in listdir(path) if os.path.isfile(x)]
+    res = []
+    for root, dirs, files in walk(path):
+        res.extend(os.path.join(root, x) for x in files)
+    return res 
+
+
 def main(args):
     """Main driver for pif-ingestor"""
 
@@ -53,6 +69,11 @@ def main(args):
     # Load the ingest extensions
     ingest_manager = IngesterManager()
 
+    path_replace = {}
+    if args.globus_collection:
+        globus_remap = push_to_globus(_enumerate_files(args.path, args.recursive), collection=args.globus_collection)
+        path_replace = {k: v["http_url"] for k, v in globus_remap.items() if "http_url" in v}
+
     metadata = {}
     if args.meta:
         with open(args.meta, "r") as f:
@@ -63,12 +84,12 @@ def main(args):
     if args.recursive:
         for root, dirs, files in walk(args.path):
             try:
-                new = _handle_pif(root, args.format, args.converter_arguments, enrichment_args, metadata, ingest_manager)
+                new = _handle_pif(root, args.format, args.converter_arguments, enrichment_args, metadata, ingest_manager, path_replace)
                 all_files.extend(new)
             except Exception as err:
                 exceptions[root] = err
     else:
-        all_files.extend(_handle_pif(args.path, args.format, args.converter_arguments, enrichment_args, metadata, ingest_manager))
+        all_files.extend(_handle_pif(args.path, args.format, args.converter_arguments, enrichment_args, metadata, ingest_manager, path_replace))
 
     if len(all_files) == 0 and len(exceptions) > 0:
         raise ValueError("Unable to parse any subdirectories.  Exceptions:\n{}".format(
