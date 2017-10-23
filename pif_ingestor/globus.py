@@ -15,6 +15,12 @@ def push_to_globus(paths, metadata={}, collection=default_collection, source_end
     except ImportError:
         raise ImportError("Install 'globus_sdk' and 'mdf_forge' before uploading to globus")
 
+    metadata["Title"] = metadata.get("Title", "dummy title")
+    metadata["Authors"] = metadata.get("Authors", [("Jane", "Doe")])
+    metadata["Publication Date"] = metadata.get("Publication Date", {"Year": 1776})
+    metadata["Publisher"] = metadata.get("Publisher", "Citrine")
+    metadata["Description"] = metadata.get("Description", "Testing dataset")
+
     # Set up clients
     config = {
         "app_name": "PIF Ingestor",
