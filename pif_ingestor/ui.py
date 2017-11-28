@@ -9,10 +9,10 @@ def get_cli():
     # Required:
     parser.add_argument('path',
                         help='Location of the file or directory to import')
-    parser.add_argument('format',
-                        help='Format of data to import, coresponding to the name of the converter extension')
 
     # Optional
+    parser.add_argument('-f', '--format', default="auto",
+                        help='Format of data to import, coresponding to the name of the converter extension')
     parser.add_argument("-r", "--recursive", action='store_true', default=False,
                         help="Recursively walk through path, ingesting all valid subdirectories")
     parser.add_argument('-d', '--dataset', type=int, default=None,
