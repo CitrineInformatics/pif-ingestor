@@ -35,16 +35,15 @@ class IngesterManager:
         if not include:
             include = self.extension_manager.entry_points_names()
         include = [x for x in include if x in self.extension_manager and x not in exclude]
-        print(include)
 
         for name in include:
             extension = self.extension_manager[name]
             try:
                 pifs = extension.plugin.convert(files, **args)
-                print("{} worked".format(name))
+                # TODO: make this selection logic smarter
                 if isinstance(pifs, System) or len(pifs) > 0:
                     return pifs
-            except Exception as e:
-                print("{} didn't work: {}".format(name, e))
+            except:
                 pass
+        logging.warning("None of these ingesters worked: {}".format(include))
         return []
