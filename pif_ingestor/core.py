@@ -16,7 +16,11 @@ from pypif_sdk.func import replace_by_key
 def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_manager, path_replace):
     """Ingest and enrich pifs from a path, returning affected paths"""
     # Run an ingest extension
-    pifs = ingest_manager.run_extension(ingest_name, path, convert_args)
+    if ingest_name == "auto":
+        pifs = ingest_manager.run_extensions([path], convert_args)
+    else:
+        pifs = ingest_manager.run_extension(ingest_name, path, convert_args)
+
     if not isinstance(pifs, list):
         pifs = [pifs]
 
