@@ -8,14 +8,27 @@ from os import walk
 from pypif import pif
 import json
 import logging
+import types
 from .ext.matmeta_wrapper import add_metadata
+
+
+def _stream_write(fname, pifs_iterable):
+    with open(fname, "w") as f:
+        f.write("[\n")
+        first = True
+        for p in pifs_iterable:
+            if not first:
+                f.write(",\n")
+            first = False
+            pif.dump(p, f)
+        f.write("\n]")
 
 
 def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_manager):
     """Ingest and enrich pifs from a path, returning affected paths"""
     # Run an ingest extension
     pifs = ingest_manager.run_extension(ingest_name, path, convert_args)
-    if not isinstance(pifs, list):
+    if not isinstance(pifs, types.GeneratorType):
         pifs = [pifs]
 
     if len(metadata) > 0:
@@ -34,8 +47,7 @@ def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_m
         pif_name = os.path.join(path, "pif.json")
         res = [path]
 
-    with open(pif_name, "w") as f:
-        pif.dump(pifs, f, indent=2)
+    _stream_write(pif_name, pifs)
     logging.info("Created pif at {}".format(pif_name))
 
     return res
