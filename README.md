@@ -13,6 +13,7 @@ This will place an executable `pif-ingestor` in your bin directory (or the bin d
 
 ### Known public converters
  * [dfttopif](https://github.com/CitrineInformatics/pif-dft) (ingests VASP and Quantum Espresso calculations)
+ * [csv_template_ingester](https://github.com/CitrineInformatics/csv_template_ingester) (ingests CSV files with PIF field information in the header)
 
 ## Usage
 ```
