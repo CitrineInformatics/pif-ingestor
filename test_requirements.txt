@@ -1,1 +1,2 @@
 dfttopif
+git+https://github.com/CitrineInformatics/csv_template_ingester.git
