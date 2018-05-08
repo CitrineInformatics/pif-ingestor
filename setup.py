@@ -13,12 +13,14 @@ setup(name='pif_ingestor',
           ]
       },
       install_requires=[
-          "pypif",
-          "citrination_client",
+          "pypif>=2.0.0,<3",
+          "pypif_sdk>=2.0.0,<3",
+          "citrination_client>=2,<4",
           "stevedore"
       ],
       extra_require={
-          "all" : ["dfttopif", "matmeta"],
+          "all" : ["dfttopif", "globus_sdk", "mdf_forge", "matmeta"],
+          "mdf" : ["globus_sdk", "mdf_forge"],
           "dft" : ["dfttopif"],
           "matmeta": ["matmeta"],
       }
