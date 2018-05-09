@@ -31,7 +31,10 @@ class IngesterManager:
             exit(1)
 
     def run_extensions(self, files, args={}, include=None, exclude=[]):
-        """Run any extensions in include but not exclude"""
+        """Run any extensions in include but not exclude
+
+        Returns list of pifs converted.
+        """
         if not include:
             include = self.extension_manager.entry_points_names()
         include = [x for x in include if x in self.extension_manager and x not in exclude]
@@ -40,8 +43,13 @@ class IngesterManager:
             extension = self.extension_manager[name]
             try:
                 pifs = extension.plugin.convert(files, **args)
+                # Return value from convert can be System, list of Systems, or generator
+                if isinstance(pifs, System):
+                    pifs = [pifs]
+                else:
+                    pifs = [p for p in pifs]
                 # TODO: make this selection logic smarter
-                if isinstance(pifs, System) or len(pifs) > 0:
+                if len(pifs) > 0:
                     return pifs
             except:
                 pass
