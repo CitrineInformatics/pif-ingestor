@@ -1,5 +1,7 @@
+import itertools
 import stevedore
 import logging
+from types import GeneratorType
 
 from pypif.obj import System
 
@@ -31,7 +33,10 @@ class IngesterManager:
             exit(1)
 
     def run_extensions(self, files, args={}, include=None, exclude=[]):
-        """Run any extensions in include but not exclude"""
+        """Run any extensions in include but not exclude
+
+        Returns list of pifs converted.
+        """
         if not include:
             include = self.extension_manager.entry_points_names()
         include = [x for x in include if x in self.extension_manager and x not in exclude]
@@ -40,10 +45,30 @@ class IngesterManager:
             extension = self.extension_manager[name]
             try:
                 pifs = extension.plugin.convert(files, **args)
+                # Return value from convert can be System, list of Systems, or generator
+                # If System, make into list
+                if isinstance(pifs, System):
+                    pifs = [pifs]
+                # Get first item, if there is one
+                if isinstance(pifs, GeneratorType):
+                    try:
+                        first_pif = next(pifs)
+                    except StopIteration:
+                        first_pif = None
+                    else:
+                        # Reconstitute generator
+                        pifs = itertools.chain([first_pif], pifs)
+                elif isinstance(pifs, list):
+                    try:
+                        first_pif = pifs[0]
+                    except IndexError:
+                        first_pif = None
+                else:
+                    raise TypeError("Unexpected return type '{}' from extension '{}'".format(str(type(pifs)), name))
                 # TODO: make this selection logic smarter
-                if isinstance(pifs, System) or len(pifs) > 0:
+                if first_pif:
                     return pifs
-            except:
+            except Exception:
                 pass
         logging.warning("None of these ingesters worked: {}".format(include))
         return []
