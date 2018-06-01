@@ -1,5 +1,7 @@
+import itertools
 import stevedore
 import logging
+from types import GeneratorType
 
 from pypif.obj import System
 
@@ -44,14 +46,29 @@ class IngesterManager:
             try:
                 pifs = extension.plugin.convert(files, **args)
                 # Return value from convert can be System, list of Systems, or generator
+                # If System, make into list
                 if isinstance(pifs, System):
                     pifs = [pifs]
+                # Get first item, if there is one
+                if isinstance(pifs, GeneratorType):
+                    try:
+                        first_pif = next(pifs)
+                    except StopIteration:
+                        first_pif = None
+                    else:
+                        # Reconstitute generator
+                        pifs = itertools.chain([first_pif], pifs)
+                elif isinstance(pifs, list):
+                    try:
+                        first_pif = pifs[0]
+                    except IndexError:
+                        first_pif = None
                 else:
-                    pifs = [p for p in pifs]
+                    raise TypeError("Unexpected return type '{}' from extension '{}'".format(str(type(pifs)), name))
                 # TODO: make this selection logic smarter
-                if len(pifs) > 0:
+                if first_pif:
                     return pifs
-            except:
+            except Exception:
                 pass
         logging.warning("None of these ingesters worked: {}".format(include))
         return []

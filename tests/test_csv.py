@@ -6,7 +6,7 @@ from os.path import exists
 
 def test_csv_generator():
     """Test that generator-returning ingesters work"""
-    argv = "tests/csv/template_example.csv -f template_csv".split()
+    argv = "tests/csv/template_example.csv".split()
     args = get_cli().parse_args(args=argv)
     main(args)
 
