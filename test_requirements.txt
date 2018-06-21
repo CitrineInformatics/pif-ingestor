@@ -1,1 +1,5 @@
-dfttopif
+dfttopif==0.3.1
+git+https://github.com/CitrineInformatics/csv_template_ingester.git
+matmeta
+globus_sdk
+mdf_forge

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='pif_ingestor',
-      version='0.2.0',
+      version='1.0.0',
       url='http://github.com/CitrineInformatics/pif-ingestor',
       description='Script to ingest common data formats into Citrination',
       author='Max Hutchinson',
@@ -13,12 +13,15 @@ setup(name='pif_ingestor',
           ]
       },
       install_requires=[
-          "pypif",
-          "citrination_client",
+          "pypif>=2.0.0,<3",
+          "pypif_sdk>=2.0.0,<3",
+          "citrination_client>=2,<4",
           "stevedore"
       ],
       extra_require={
-          "all" : ["dfttopif"],
+          "all" : ["dfttopif", "globus_sdk", "mdf_forge", "matmeta"],
+          "mdf" : ["globus_sdk", "mdf_forge"],
           "dft" : ["dfttopif"],
+          "matmeta": ["matmeta"],
       }
 )

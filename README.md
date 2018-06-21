@@ -13,23 +13,28 @@ This will place an executable `pif-ingestor` in your bin directory (or the bin d
 
 ### Known public converters
  * [dfttopif](https://github.com/CitrineInformatics/pif-dft) (ingests VASP and Quantum Espresso calculations)
+ * [csv_template_ingester](https://github.com/CitrineInformatics/csv_template_ingester) (ingests CSV files with PIF field information in the header)
 
 ## Usage
 ```
-$ pif-ingestor -h
-usage: pif-ingestor [-h] [-d DATASET] [--tags TAGS [TAGS ...]] [-l LICENSE]
-                    [-c CONTACT] [-z ZIP] [-t TAR]
-                    [--args CONVERTER_ARGUMENTS]
-                    path format
+$ usage: pif-ingestor [-h] [-f FORMAT] [-r] [-d DATASET]
+                    [--tags TAGS [TAGS ...]] [-l LICENSE] [-c CONTACT]
+                    [-z ZIP] [-t TAR] [--globus-collection GLOBUS_COLLECTION]
+                    [-m META] [--args CONVERTER_ARGUMENTS]
+                    path
 
 Ingest data files to Citrination
+
 positional arguments:
   path                  Location of the file or directory to import
-  format                Format of data to import, coresponding to the name of
-                        the converter extension
 
 optional arguments:
   -h, --help            show this help message and exit
+  -f FORMAT, --format FORMAT
+                        Format of data to import, coresponding to the name of
+                        the converter extension
+  -r, --recursive       Recursively walk through path, ingesting all valid
+                        subdirectories
   -d DATASET, --dataset DATASET
                         ID of the dataset into which to upload PIFs
   --tags TAGS [TAGS ...]
@@ -40,6 +45,9 @@ optional arguments:
                         Contact information (string)
   -z ZIP, --zip ZIP     Zip to this file
   -t TAR, --tar TAR     Tar to this file
+  --globus-collection GLOBUS_COLLECTION
+                        Globus Publish collection to upload files
+  -m META, --meta META  Meta-data in common format
   --args CONVERTER_ARGUMENTS
                         Arguments to pass to converter (as JSON dictionary)
 ```
@@ -48,7 +56,7 @@ optional arguments:
 
 Convert a VASP file, generating a quality report, and upload it to datasetID 7:
 ```
-$ pif-ingestor B.hR12 dft -d 7 --args='{"quality_report" : true}'
+$ pif-ingestor B.hR12 -f dft -d 7 --args='{"quality_report" : true}'
 ```
 
 ## Support
