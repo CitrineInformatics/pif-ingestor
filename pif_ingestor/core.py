@@ -32,6 +32,8 @@ def _handle_pif(path, ingest_name, convert_args, enrich_args, metadata, ingest_m
     # Run an ingest extension
     if ingest_name == "auto":
         pifs = ingest_manager.run_extensions([path], convert_args)
+    elif ingest_name == "merge":
+        pifs = ingest_manager.run_extensions([path], convert_args, merge=True)
     else:
         pifs = ingest_manager.run_extension(ingest_name, path, convert_args)
 
