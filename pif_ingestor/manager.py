@@ -26,8 +26,6 @@ class IngesterManager:
 
     def _merge_outputs(self, outputs):
         res = [reduce(merge, x) for x in zip(*outputs)]
-        print(list(outputs[0][0].as_dictionary()))
-        print(list(outputs[1][0].as_dictionary()))
         return [reduce(merge, x) for x in zip(*outputs)]
 
     def run_extension(self, name, path, args):
