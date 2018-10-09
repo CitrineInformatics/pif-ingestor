@@ -32,7 +32,10 @@ optional arguments:
   -h, --help            show this help message and exit
   -f FORMAT, --format FORMAT
                         Format of data to import, coresponding to the name of
-                        the converter extension
+                        the converter extension.  "auto" will try installed
+                        ingesters until one works.  "merge" will try all 
+                        installed ingesters and try to merge the results into
+                        a single PIF.
   -r, --recursive       Recursively walk through path, ingesting all valid
                         subdirectories
   -d DATASET, --dataset DATASET
