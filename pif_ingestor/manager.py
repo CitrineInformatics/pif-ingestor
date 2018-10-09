@@ -25,7 +25,6 @@ class IngesterManager:
         )
 
     def _merge_outputs(self, outputs):
-        res = [reduce(merge, x) for x in zip(*outputs)]
         return [reduce(merge, x) for x in zip(*outputs)]
 
     def run_extension(self, name, path, args):
@@ -75,7 +74,6 @@ class IngesterManager:
                 # TODO: make this selection logic smarter
                 if first_pif:
                     outputs.append(pifs)
-                    print("Ingest worked for {}".format(name))
             except Exception:
                 pass
         if len(outputs) == 0:
