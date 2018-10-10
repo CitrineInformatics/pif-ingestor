@@ -2,8 +2,10 @@ import itertools
 import stevedore
 import logging
 from types import GeneratorType
+from functools import reduce
 
 from pypif.obj import System
+from pypif_sdk.func.update_funcs import merge
 
 
 def _callback(manager, entrypoint, exception):
@@ -22,6 +24,9 @@ class IngesterManager:
             on_load_failure_callback=_callback
         )
 
+    def _merge_outputs(self, outputs):
+        return [reduce(merge, x) for x in zip(*outputs)]
+
     def run_extension(self, name, path, args):
         """Run extension by name on path with arguments"""
         if name in self.extension_manager:
@@ -32,7 +37,7 @@ class IngesterManager:
             logging.error("{} is an unknown format\nAvailable formats: {}".format(name, self.extension_manager.names()))
             exit(1)
 
-    def run_extensions(self, files, args={}, include=None, exclude=[]):
+    def run_extensions(self, files, args={}, include=None, exclude=[], merge=False):
         """Run any extensions in include but not exclude
 
         Returns list of pifs converted.
@@ -41,6 +46,7 @@ class IngesterManager:
             include = self.extension_manager.entry_points_names()
         include = [x for x in include if x in self.extension_manager and x not in exclude]
 
+        outputs = []
         for name in include:
             extension = self.extension_manager[name]
             try:
@@ -67,8 +73,14 @@ class IngesterManager:
                     raise TypeError("Unexpected return type '{}' from extension '{}'".format(str(type(pifs)), name))
                 # TODO: make this selection logic smarter
                 if first_pif:
-                    return pifs
+                    outputs.append(pifs)
             except Exception:
                 pass
-        logging.warning("None of these ingesters worked: {}".format(include))
-        return []
+        if len(outputs) == 0:
+            logging.warning("None of these ingesters worked: {}".format(include))
+            return []
+        elif merge and all(len(x) == len(outputs[0]) for x in outputs):
+            return self._merge_outputs(outputs)
+        else:
+            return outputs[0]
+
