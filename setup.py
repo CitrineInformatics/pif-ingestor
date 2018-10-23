@@ -18,7 +18,7 @@ setup(name='pif_ingestor',
           "citrination_client>=2,<4",
           "stevedore"
       ],
-      extra_require={
+      extras_require={
           "all" : ["dfttopif", "globus_sdk", "mdf_forge", "matmeta"],
           "mdf" : ["globus_sdk", "mdf_forge"],
           "dft" : ["dfttopif"],
