@@ -15,7 +15,7 @@ setup(name='pif_ingestor',
       install_requires=[
           "pypif>=2.0.0,<3",
           "pypif_sdk>=2.0.0,<3",
-          "citrination_client>=2,<4",
+          "citrination_client>=4.4.1,<5",
           "stevedore"
       ],
       extras_require={
