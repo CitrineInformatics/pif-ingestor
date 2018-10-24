@@ -25,6 +25,6 @@ def _get_client():
 
 
 def _upload_single(path, dataset, client):
-    client.upload_file(path, dataset)
+    client.upload(dataset, path)
     logging.info("Uploaded {}".format(path))
     return
