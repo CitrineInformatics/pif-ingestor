@@ -1,5 +1,5 @@
 pypif==2.0.1
-pypif_sdk>=2.2.1,<3
-citrination_client>=4.4.2,<5
+pypif_sdk==2.2.1
+citrination_client==4.4.2
 stevedore
 matmeta==0.1.1
